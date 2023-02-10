@@ -42,7 +42,7 @@ jobs:
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         ECR_REPOSITORY: mcs-poc-001
-        IMAGE_TAG: ${{ GITHUB_SHA }}
+        IMAGE_TAG: ${GITHUB_SHA}
     
     - name: Security scan on docker image
       uses: snyk/actions/docker@master

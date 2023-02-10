@@ -6,8 +6,6 @@ on:
   pull_request:
     branches: [ "ci_testing" ]
   
-  
-
 jobs:
 
   build:

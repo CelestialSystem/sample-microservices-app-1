@@ -30,7 +30,6 @@ jobs:
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
       
-
     - name: Build the Docker image
       working-directory: auth-api
       run: docker build . --file Dockerfile --tag sample-app-auth-api:${GITHUB_REF##*/}-${GITHUB_SHA}

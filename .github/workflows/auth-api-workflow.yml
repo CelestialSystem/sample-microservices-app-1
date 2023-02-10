@@ -43,7 +43,7 @@ jobs:
        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
       with:
         image: ${{ steps.login-ecr.outputs.registry }}/${{ matrix.repository }}
-        args: --file=Dockerfile 
+        args: --file=snyk.Dockerfile 
          --severity-threshold=low
          --sarif-file-output= auth-api/docker.snyk.sarif 
         sarif: false

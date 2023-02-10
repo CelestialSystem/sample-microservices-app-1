@@ -52,7 +52,7 @@ jobs:
       if: always()
       uses: github/codeql-action/upload-sarif@v2
       with:
-        sarif_file: results.sarif
+        sarif_file: snyk.Dockerfile
 
     - name: Check docker image scan status
       if: ${{ steps.docker-image-scan.outcome == 'failure' }}

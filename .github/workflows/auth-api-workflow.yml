@@ -42,7 +42,7 @@ jobs:
         image: ${{ steps.login-ecr.outputs.registry }}/auth-api:${GITHUB_REF##*/}-${GITHUB_SHA}
         args: --file=Dockerfile 
          --severity-threshold=low
-         --sarif-file-output= /home/runner/work/sample-microservices-app-1/sample-microservices-app-1/auth-api/docker.snyk.sarif 
+         --sarif-file-output= /home/runner/work/sample-microservices-app-1/sample-microservices-app-1/auth-api/output-file.json/docker.snyk.sarif 
         sarif: false
     
     - name: Upload sarif file to Github Code Scanning

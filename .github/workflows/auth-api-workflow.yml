@@ -42,15 +42,14 @@ jobs:
         image: ${{ steps.login-ecr.outputs.registry }}/auth-api:${GITHUB_REF##*/}-${GITHUB_SHA}
         args: --file=Dockerfile 
          --severity-threshold=low
-         --sarif-file-output= /home/runner/work/sample-microservices-app-1/sample-microservices-app-1/auth-api/output-file.json/docker.snyk.sarif 
+         --sarif-file-output= ./auth-api/output-file.json/docker.snyk.sarif 
         sarif: false
     
     - name: Upload sarif file to Github Code Scanning
       if: always()
       uses: github/codeql-action/upload-sarif@v2
       with:
-        sarif_file: /home/runner/work/sample-microservices-app-1/sample-microservices-app-1/auth-api/output-file.json/docker.snyk.sarif
-
+        sarif_file: auth-api/output-file.json/docker.snyk.sarif 
     - name: Check docker image scan status
       if: ${{ steps.docker-image-scan.outcome == 'failure' }}
       run: exit 1

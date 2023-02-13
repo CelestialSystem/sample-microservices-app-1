@@ -43,7 +43,6 @@ jobs:
         args: --file=Dockerfile 
          --severity-threshold=low
          --sarif-file-output= ./auth-api/output-file.json/docker.snyk.sarif 
-        sarif: false
     
     - name: Upload sarif file to Github Code Scanning
       if: always()

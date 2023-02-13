@@ -42,7 +42,7 @@ jobs:
         image: ${{ steps.login-ecr.outputs.registry }}/auth-api:${GITHUB_REF##*/}-${GITHUB_SHA}
         args: --file=Dockerfile 
          --severity-threshold=low
-         --sarif-file-output= ./snyk.sarif 
+         --sarif-file-output= snyk.sarif 
         sarif : true
     
     - name: Upload sarif file to Github Code Scanning

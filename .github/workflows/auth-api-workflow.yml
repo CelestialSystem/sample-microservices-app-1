@@ -40,6 +40,18 @@ jobs:
          output: 'sarif-results/trivy-results.sarif'
          severity: 'CRITICAL,HIGH'
          
+    - name: Run Dockle scanner (sarif report)
+      run: |
+          dockle -f sarif -o sarif-results/dockle-results.sarif sample-app-auth-api:${GITHUB_REF##*/}-${GITHUB_SHA}
+          
+    - name: Debug output
+      run: |
+          echo "######### DOCKLE ###############"
+          cat sarif-results/dockle-results.sarif
+          echo 
+          echo "######### TRIVY ################"
+          cat sarif-results/trivy-results.sarif
+         
     - name: Upload Trivy scan results to Github security tab
       uses: github/codeql-action/upload-sarif@v2
       with:

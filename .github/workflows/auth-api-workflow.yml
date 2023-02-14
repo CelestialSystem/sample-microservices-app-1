@@ -30,6 +30,10 @@ jobs:
     - name: Build the Docker image
       working-directory: auth-api
       run: docker build . --file Dockerfile --tag sample-app-auth-api:${GITHUB_REF##*/}-${GITHUB_SHA}
+    - name: Debug output
+      run: |
+          echo "######### image ###############"
+          cat sample-app-auth-api:${GITHUB_REF##*/}-${GITHUB_SHA}
     
     - name: Run Trivy vulnerability scanner
       uses: aquasecurity/trivy-action@master

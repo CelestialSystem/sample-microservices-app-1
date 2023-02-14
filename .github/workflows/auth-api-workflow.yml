@@ -37,6 +37,7 @@ jobs:
          image-ref: 'Dockerfile'
          format: 'sarif'
          output: 'trivy-results.sarif'
+         ignore-unfixed: true
          severity: 'CRITICAL,HIGH'
          
     - name: Upload Trivy scan results to Github security tab

@@ -37,7 +37,7 @@ jobs:
          image-ref: 'sample-app-auth-api:${GITHUB_REF##*/}-${GITHUB_SHA}'
          format: 'template'
          template: '@.github/trivy/sarif.tpl'
-         output: 'sarif-results/trivy-results.sarif'
+         output: 'trivy-results.sarif'
          severity: 'CRITICAL,HIGH'
          
     - name: Run Dockle scanner (sarif report)
@@ -50,12 +50,12 @@ jobs:
           cat sarif-results/dockle-results.sarif
           echo 
           echo "######### TRIVY ################"
-          cat sarif-results/trivy-results.sarif
+          cat trivy-results.sarif
          
     - name: Upload Trivy scan results to Github security tab
       uses: github/codeql-action/upload-sarif@v2
       with:
-          sarif_file: 'sarif-results'
+          sarif_file: 'trivy-results.sarif'
 
 
     - name: Build, tag, and push image to Amazon ECR

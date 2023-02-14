@@ -34,7 +34,7 @@ jobs:
     - name: Run Trivy vulnerability scanner
       uses: aquasecurity/trivy-action@master
       with:
-         image-ref: 'docker.io/sample-app-auth-api:${GITHUB_REF##*/}-${GITHUB_SHA}'
+         image-ref: '--file Dockerfile'
          format: 'sarif'
          output: 'trivy-results.sarif'
          severity: 'CRITICAL,HIGH'

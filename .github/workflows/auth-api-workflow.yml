@@ -33,8 +33,7 @@ jobs:
     
     - name: Debug output
       run: | 
-
-          cat sample-app-auth-api:${GITHUB_REF##*/}-${GITHUB_SHA}
+          docker images
     
     - name: Run Trivy vulnerability scanner
       uses: aquasecurity/trivy-action@master

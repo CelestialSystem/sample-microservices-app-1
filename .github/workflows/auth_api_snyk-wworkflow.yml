@@ -39,12 +39,14 @@ jobs:
           
     - name: Run Snyk to check Docker images for vulnerabilities
       uses: snyk/actions/docker@master
+      id: docker-image-scan
       env:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
       with:
         image: sample-app-auth-api:${{ github.sha }}
         args: --file=Dockerfile --severity-threshold=high
               --sarif-file-output= ./auth-api/docker.snyk.sarif
+        sarif: false
         
     - name: Debug output
       run: |
@@ -53,8 +55,14 @@ jobs:
           cat snyk.sarif    
     - name: Upload result to GitHub Code Scanning
       uses: github/codeql-action/upload-sarif@v2
+      if: always()
       with:
         sarif_file: snyk.sarif
+    
+    - name: Check docker image scan status
+      if: ${{ steps.docker-image-scan.outcome == 'failure' }}
+      run: exit 1
+
 
     #- name: Build, tag, and push image to Amazon ECR
      # id: build-image

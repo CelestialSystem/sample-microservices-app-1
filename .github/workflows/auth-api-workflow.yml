@@ -38,9 +38,9 @@ jobs:
       working-directory: auth-api
       run: docker build . --file Dockerfile --tag sample-app-auth-api:${GITHUB_REF##*/}-${GITHUB_SHA}
     
-    - name: Debug output
-      run: | 
-          docker images
+   # - name: Debug output
+    #  run: | 
+     #     docker images
     
     #- name: Install Trivy
      # run: |
@@ -52,7 +52,7 @@ jobs:
       uses: aquasecurity/trivy-action@master
      # if: ${{ always() }}
       with:
-        image-ref: 'sample-app-auth-api:${GITHUB_REF##*/}-${GITHUB_SHA}'
+        image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.version }}
         format: 'sarif'
          #exit-code: '42'        
         output: 'trivy-results-docker.sarif'

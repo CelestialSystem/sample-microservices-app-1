@@ -45,7 +45,7 @@ jobs:
       with:
         image: sample-app-auth-api:${{ github.sha }}
         args: --file=Dockerfile --severity-threshold=high
-              
+              --sarif-file-output=./auth-api/output-file.json/docker.snyk.sarif
         sarif: false
         
     - name: Debug output

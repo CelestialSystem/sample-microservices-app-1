@@ -40,7 +40,8 @@ jobs:
     - name: Install Trivy
       run: |
           curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin v${{ env.TRIVY_VERSION }}
-
+          echo "scannig the docker image"
+          trivy image sample-app-auth-api:${GITHUB_REF##*/}-${GITHUB_SHA}
     
    # - name: Run Trivy vulnerability scanner
     #  uses: aquasecurity/trivy-action@master

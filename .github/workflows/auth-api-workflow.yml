@@ -36,8 +36,8 @@ jobs:
       
     - name: Build the Docker image
       working-directory: auth-api
-      run: docker build . --file Dockerfile --tag docker.io/celestialsystem/sample-app-auth-api:${GITHUB_REF##*/}-${GITHUB_SHA}
-    
+      run: docker build . --file Dockerfile --tag ghcr.io/CelestialSystem/sample-app-auth-api:${GITHUB_REF##*/}-${GITHUB_SHA}
+       
    # - name: Debug output
     #  run: | 
      #     docker images
@@ -52,10 +52,10 @@ jobs:
       uses: aquasecurity/trivy-action@master
      # if: ${{ always() }}
       with:
-        image-ref: 'docker.io/celestialsystem/sample-app-auth-api:${GITHUB_REF##*/}-${GITHUB_SHA}'
-        format: 'sarif'
+       image-ref: 'ghcr.io/CelestialSystem/sample-app-auth-api:${GITHUB_REF##*/}-${GITHUB_SHA}'
+       format: 'sarif'
          #exit-code: '42'        
-        output: 'trivy-results-docker.sarif'
+       output: 'trivy-results-docker.sarif'
          #severity: 'CRITICAL,HIGH'
           
   #  - name: Debug output

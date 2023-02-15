@@ -37,20 +37,20 @@ jobs:
       run: | 
           docker images
     
-    - name: Install Trivy
-      run: |
-          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin v${{ env.TRIVY_VERSION }}
-          echo "scannig the docker image"
-          trivy image sample-app-auth-api:${GITHUB_REF##*/}-${GITHUB_SHA}
+    #- name: Install Trivy
+     # run: |
+      #    curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin v${{ env.TRIVY_VERSION }}
+       #   echo "scannig the docker image"
+        #  trivy image sample-app-auth-api:${GITHUB_REF##*/}-${GITHUB_SHA}
     
-   # - name: Run Trivy vulnerability scanner
-    #  uses: aquasecurity/trivy-action@master
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
      # if: ${{ always() }}
-      #with:
-       #  image-ref: 'sample-app-auth-api:${GITHUB_REF##*/}-${GITHUB_SHA}'
-        # format: 'table'
+      with:
+        image-ref: 'sample-app-auth-api:${GITHUB_REF##*/}-${GITHUB_SHA}'
+        format: 'sarif'
          #exit-code: '42'        
-         #output: 'trivy-results-docker.sarif'
+        output: 'trivy-results-docker.sarif'
          #severity: 'CRITICAL,HIGH'
           
   #  - name: Debug output

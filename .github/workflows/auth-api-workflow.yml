@@ -23,24 +23,24 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    #- name: Configure AWS credentials
-    #  uses: aws-actions/configure-aws-credentials@v1
-     # with:
-      #    aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-       #   aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        #  aws-region: us-east-1
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
 
-    #- name: Login to AWS ECR
-     # id: login-ecr
-      #uses: aws-actions/amazon-ecr-login@v1
+    - name: Login to AWS ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
       
     - name: Build the Docker image
       working-directory: auth-api
       run: docker build . --file Dockerfile --tag sample-app-auth-api:${{ github.sha }}
        
-   # - name: Debug output
-    #  run: | 
-     #     docker images
+    - name: Debug output
+      run: | 
+          docker images
     
     #- name: Install Trivy
      # run: |
@@ -69,16 +69,16 @@ jobs:
         sarif_file: 'trivy-results-docker.sarif'
 
 
-    #- name: Build, tag, and push image to Amazon ECR
-     # id: build-image
-      #env:
-       # ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        #ECR_REPOSITORY: mcs-poc-001
-        #IMAGE_TAG: ${GITHUB_SHA}
-      #if: ${{ github.ref == 'refs/heads/main' && github.event_name == 'push' }}
+    - name: Build, tag, and push image to Amazon ECR
+      id: build-image
+      env:
+       ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+       ECR_REPOSITORY: mcs-poc-001
+       IMAGE_TAG: ${{ github.sha }}
+       if: ${{ github.ref == 'refs/heads/main' && github.event_name == 'push' }}
     
-      #run: |
-        #docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+      run: |
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
    
 

@@ -30,10 +30,6 @@ jobs:
     - name: Build the Docker image
       working-directory: auth-api
       run: docker build . --file Dockerfile --tag sample-app-auth-api:${GITHUB_REF##*/}-${GITHUB_SHA}
-    
-    - name: Debug output
-      run: |
-          cat sample-app-auth-api:${GITHUB_REF##*/}-${GITHUB_SHA}
           
     - name: Run Snyk to check Docker images for vulnerabilities
       uses: snyk/actions/docker@master

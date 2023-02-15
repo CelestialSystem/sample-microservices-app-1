@@ -47,8 +47,8 @@ jobs:
               --sarif-file-output= ./auth-api/docker.snyk.sarif
         
     - name: Debug output
-        run: |
-          
+      run: |
+        
           echo "######### snyk ################"
           cat snyk.sarif    
     - name: Upload result to GitHub Code Scanning

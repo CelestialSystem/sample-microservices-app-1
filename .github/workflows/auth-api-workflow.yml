@@ -36,7 +36,7 @@ jobs:
       
     - name: Build the Docker image
       working-directory: auth-api
-      run: docker build . --file Dockerfile --tag sample-app-auth-api:${GITHUB_SHA}
+      run: docker build . --file Dockerfile --tag sample-app-auth-api:${{ GITHUB_SHA }}
        
    # - name: Debug output
     #  run: | 
@@ -52,7 +52,7 @@ jobs:
       uses: aquasecurity/trivy-action@master
      # if: ${{ always() }}
       with:
-       image-ref: sample-app-auth-api:${GITHUB_SHA}
+       image-ref: sample-app-auth-api:${{ GITHUB_SHA }}
        format: 'sarif'
          #exit-code: '42'        
        output: 'trivy-results-docker.sarif'

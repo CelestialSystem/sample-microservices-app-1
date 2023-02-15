@@ -30,36 +30,31 @@ jobs:
     - name: Build the Docker image
       working-directory: auth-api
       run: docker build . --file Dockerfile --tag sample-app-auth-api:${GITHUB_REF##*/}-${GITHUB_SHA}
+    
     - name: Debug output
-      run: |
-          echo "######### image ###############"
+      run: | 
+
           cat sample-app-auth-api:${GITHUB_REF##*/}-${GITHUB_SHA}
     
     - name: Run Trivy vulnerability scanner
       uses: aquasecurity/trivy-action@master
+      if: ${{ always() }}
       with:
          image-ref: 'sample-app-auth-api:${GITHUB_REF##*/}-${GITHUB_SHA}'
-         format: 'template'
-         template: '@.github/trivy/sarif.tpl'
-         output: 'trivy-results.sarif'
+         format: 'table'
+         exit-code: '42'        
+         output: 'trivy-results-docker.sarif'
          severity: 'CRITICAL,HIGH'
-         
-    - name: Run Dockle scanner (sarif report)
-      run: |
-          dockle -f sarif -o sarif-results/dockle-results.sarif sample-app-auth-api:${GITHUB_REF##*/}-${GITHUB_SHA}
           
     - name: Debug output
-      run: |
-          echo "######### DOCKLE ###############"
-          cat sarif-results/dockle-results.sarif
-          echo 
-          echo "######### TRIVY ################"
-          cat trivy-results.sarif
+      run: 
+          echo "#########TRIVY################"
+          cat trivy-results-docker.sarif
          
     - name: Upload Trivy scan results to Github security tab
       uses: github/codeql-action/upload-sarif@v2
       with:
-          sarif_file: 'trivy-results.sarif'
+          sarif_file: 'trivy-results-docker.sarif'
 
 
     - name: Build, tag, and push image to Amazon ECR

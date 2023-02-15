@@ -5,7 +5,9 @@ on:
     branches: [ "ci_testing" ]
   pull_request:
     branches: [ "ci_testing" ]
-  
+env:
+  TRIVY_VERSION: 0.37.2
+  BATS_LIB_PATH: '/usr/lib/'
 jobs:
 
   build:

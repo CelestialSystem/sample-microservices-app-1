@@ -8,6 +8,11 @@ on:
 env:
   TRIVY_VERSION: 0.37.2
   BATS_LIB_PATH: '/usr/lib/'
+permissions:
+  contents: read
+  packages: write
+  id-token: write
+  security-events: write
 jobs:
 
   build:

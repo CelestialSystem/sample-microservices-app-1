@@ -1,0 +1,69 @@
+name: log Message Processor Workflow
+
+on:
+  push:
+    branches: [ "ci_testing" ]
+  pull_request:
+    branches: [ "ci_testing" ]
+  
+env:
+ REGISTRY: 859047589462.dkr.ecr.us-east-1.amazonaws.com
+ REPOSITORY: sample-microsvc-app-log-message-processor
+ IMAGE_TAG: ${{ github.sha }}
+
+permissions:
+  contents: read
+  packages: write
+  id-token: write
+  security-events: write
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      
+    - name: Build the Docker image
+      working-directory: log-message-processor
+      run: docker build . --file Dockerfile --tag $REGISTRY/$REPOSITORY:$IMAGE_TAG
+       
+    - name: Debug output
+      run: | 
+          docker images
+    
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+       image-ref: ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:${{ env.IMAGE_TAG }}
+       format: 'sarif'
+       output: 'trivy-results-docker.sarif'
+       severity: 'CRITICAL,HIGH'
+          
+    - name: Debug output
+      run: |
+         echo "#########TRIVY################"
+         cat trivy-results-docker.sarif
+         
+    - name: Upload Trivy scan results to Github security tab
+      uses: github/codeql-action/upload-sarif@v2
+      with:
+        sarif_file: 'trivy-results-docker.sarif'
+        
+    - name: Login to AWS ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - name: Build, tag, and push image to Amazon ECR
+      id: build-image
+      run: |
+        docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG

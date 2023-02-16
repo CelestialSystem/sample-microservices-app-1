@@ -9,7 +9,7 @@ on:
 env:
  REGISTRY: 859047589462.dkr.ecr.us-east-1.amazonaws.com
  REPOSITORY: sample-microsvc-app-users-api
- IMAGE_TAG: ${{ github.sha }}
+ IMAGE_TAG: ${{ github.sha::7 }}
 
 permissions:
   contents: read

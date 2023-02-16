@@ -74,7 +74,7 @@ jobs:
       env:
        REGISTRY: ${{ steps.login-ecr.outputs.registry }}
        REPOSITORY: mcs-poc-001
-       IMAGE_TAG: sample-app-auth-api:${{ github.sha }}
+       IMAGE_TAG: ${{ github.sha }}
       run: |
         docker push sample-app-auth-api:$IMAGE_TAG
         

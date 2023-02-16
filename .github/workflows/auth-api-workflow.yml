@@ -5,9 +5,12 @@ on:
     branches: [ "ci_testing" ]
   pull_request:
     branches: [ "ci_testing" ]
-#env:
- # TRIVY_VERSION: 0.37.2
-  #BATS_LIB_PATH: '/usr/lib/'
+  
+env:
+ REGISTRY: 859047589462.dkr.ecr.us-east-1.amazonaws.com
+ REPOSITORY: sample-microsvc-app-auth-api
+ IMAGE_TAG: ${{ github.sha }}
+
 permissions:
   contents: read
   packages: write
@@ -32,31 +35,17 @@ jobs:
       
     - name: Build the Docker image
       working-directory: auth-api
-      env:
-       REPOSITORY: sample-microsvc-app-auth-api
-       IMAGE_TAG: ${{ github.sha }}
-      run: docker build . --file Dockerfile --tag $REPOSITORY:$IMAGE_TAG
+      run: docker build . --file Dockerfile --tag $REGISTRY/$REPOSITORY:$IMAGE_TAG
        
     - name: Debug output
       run: | 
           docker images
     
-    #- name: Install Trivy
-     # run: |
-      #    curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin v${{ env.TRIVY_VERSION }}
-       #   echo "scannig the docker image"
-        #  trivy image sample-app-auth-api:${GITHUB_REF##*/}-${GITHUB_SHA}
-    
     - name: Run Trivy vulnerability scanner
       uses: aquasecurity/trivy-action@master
-      env:
-       REPOSITORY: sample-microsvc-app-auth-api
-       IMAGE_TAG: ${{ github.sha }}
-     # if: ${{ always() }}
       with:
-       image-ref: sample-microsvc-app-auth-api:${{ github.sha }}
+       image-ref: $REGISTRY/$REPOSITORY:$IMAGE_TAG
        format: 'sarif'
-         #exit-code: '42'        
        output: 'trivy-results-docker.sarif'
        severity: 'CRITICAL,HIGH'
           
@@ -76,10 +65,6 @@ jobs:
 
     - name: Build, tag, and push image to Amazon ECR
       id: build-image
-      env:
-       REGISTRY: 859047589462.dkr.ecr.us-east-1.amazonaws.com
-       REPOSITORY: sample-microsvc-app-auth-api
-       IMAGE_TAG: ${{ github.sha }}
       run: |
         docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
         

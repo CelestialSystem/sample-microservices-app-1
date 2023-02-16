@@ -76,5 +76,5 @@ jobs:
        REPOSITORY: mcs-poc-001
        IMAGE_TAG: sample-app-auth-api:${{ github.sha }}
       run: |
-        docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+        docker push sample-app-auth-api:$IMAGE_TAG
         

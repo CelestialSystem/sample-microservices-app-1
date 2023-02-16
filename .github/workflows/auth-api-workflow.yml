@@ -34,7 +34,11 @@ jobs:
       
     - name: Build the Docker image
       working-directory: auth-api
-      run: docker build . --file Dockerfile --tag sample-app-auth-api:${{ github.sha }}
+      env:
+       REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+       REPOSITORY: mcs-poc-001
+       IMAGE_TAG: ${{ github.sha }}
+      run: docker build . --file Dockerfile --tag $REGISTRY/$REPOSITORY/auth-api:$IMAGE_TAG
        
     - name: Debug output
       run: | 
@@ -48,9 +52,13 @@ jobs:
     
     - name: Run Trivy vulnerability scanner
       uses: aquasecurity/trivy-action@master
+      env:
+       REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+       REPOSITORY: mcs-poc-001
+       IMAGE_TAG: ${{ github.sha }}
      # if: ${{ always() }}
       with:
-       image-ref: sample-app-auth-api:${{ github.sha }}
+       image-ref: $REGISTRY/$REPOSITORY/auth-api:$IMAGE_TAG
        format: 'sarif'
          #exit-code: '42'        
        output: 'trivy-results-docker.sarif'
@@ -77,5 +85,5 @@ jobs:
        REPOSITORY: mcs-poc-001
        IMAGE_TAG: ${{ github.sha }}
       run: |
-        docker push sample-app-auth-api:$IMAGE_TAG
+        docker push $REGISTRY/$REPOSITORY/auth-api:$IMAGE_TAG
         

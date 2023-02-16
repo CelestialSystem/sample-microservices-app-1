@@ -54,7 +54,7 @@ jobs:
        IMAGE_TAG: ${{ github.sha }}
      # if: ${{ always() }}
       with:
-       image-ref: $REPOSITORY:$IMAGE_TAG
+       image-ref: sample-microsvc-app-auth-api:${{ github.sha }}
        format: 'sarif'
          #exit-code: '42'        
        output: 'trivy-results-docker.sarif'

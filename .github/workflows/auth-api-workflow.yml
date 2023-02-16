@@ -56,7 +56,7 @@ jobs:
        IMAGE_TAG: ${{ github.sha }}
      # if: ${{ always() }}
       with:
-       image-ref: "859047589462.dkr.ecr.us-east-1.amazonaws.com/$REPOSITORY/auth-api:$IMAGE_TAG"
+       image-ref: "859047589462.dkr.ecr.us-east-1.amazonaws.com/mcs-poc-001/auth-api:$IMAGE_TAG"
        format: 'sarif'
          #exit-code: '42'        
        output: 'trivy-results-docker.sarif'

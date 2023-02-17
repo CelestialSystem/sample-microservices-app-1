@@ -35,7 +35,7 @@ jobs:
       
     - name: Build the Docker image
       working-directory: users-api
-      run: docker build . --file Dockerfile --tag $REGISTRY/$REPOSITORY:${GITHUB_REF##*/}-$IMAGE_TAG
+      run: docker build . --file Dockerfile --tag $REGISTRY/$REPOSITORY-${GITHUB_REF##*/}:$IMAGE_TAG
        
     - name: Debug output
       run: | 

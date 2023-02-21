@@ -4,7 +4,7 @@ on:
   push:
     branches: [ "ci_testing" ]
     paths: 
-     - 'auth-api/**' 
+     - "*.yml" 
   
 env:
  REGISTRY: 859047589462.dkr.ecr.us-east-1.amazonaws.com

@@ -3,8 +3,8 @@ name: Auth API Workflow
 on:
   push:
     branches: [ "ci_testing" ]
-  pull_request:
-    branches: [ "ci_testing" ]
+    paths: 
+     - 'auth-api/**' 
   
 env:
  REGISTRY: 859047589462.dkr.ecr.us-east-1.amazonaws.com

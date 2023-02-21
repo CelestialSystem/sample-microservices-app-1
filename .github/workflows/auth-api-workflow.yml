@@ -9,14 +9,30 @@ on:
 env:
  REGISTRY: 859047589462.dkr.ecr.us-east-1.amazonaws.com
  REPOSITORY: sample-microsvc-app-auth-api
- IMAGE_TAG: ${{ github.sha }}
+ 
 
 permissions:
   contents: read
   packages: write
   id-token: write
   security-events: write
+  
 jobs:
+
+  getBranch_and_commitHash:
+    runs-on: ubuntu-latest
+
+    outputs:
+      output1: ${{ steps.branch.outputs.git_branch }}
+      output2: ${{ steps.hash.outputs.git_hash }}
+    steps:
+      - name: Get Branch
+        id: branch
+        run: echo "::set-output name=git_branch::${GITHUB_REF#refs/heads/}"
+
+      - name: Get Hash
+        id: hash
+        run: echo "::set-output name=git_hash::$(echo $GITHUB_SHA | cut -c1-7)"
 
   build:
 
@@ -35,7 +51,7 @@ jobs:
       
     - name: Build the Docker image
       working-directory: auth-api
-      run: docker build . --file Dockerfile --tag $REGISTRY/$REPOSITORY:$IMAGE_TAG
+      run: docker build . --file Dockerfile --tag $REGISTRY/$REPOSITORY:${{needs.getBranch_and_commitHash.outputs.output1}}-${{needs.getBranch_and_commitHash.outputs.output2}}
        
     - name: Debug output
       run: | 
@@ -44,7 +60,7 @@ jobs:
     - name: Run Trivy vulnerability scanner
       uses: aquasecurity/trivy-action@master
       with:
-       image-ref: ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:${{ env.IMAGE_TAG }}
+       image-ref: ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:${{needs.getBranch_and_commitHash.outputs.output1}}-${{needs.getBranch_and_commitHash.outputs.output2}}
        format: 'sarif'
        output: 'trivy-results-docker.sarif'
        severity: 'CRITICAL,HIGH'
@@ -63,8 +79,8 @@ jobs:
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
 
-    #- name: Build, tag, and push image to Amazon ECR
-     # id: build-image
-      #run: |
-       # docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+    - name: Build, tag, and push image to Amazon ECR
+      id: build-image
+      run: |
+        docker push $REGISTRY/$REPOSITORY:${{needs.getBranch_and_commitHash.outputs.output1}}-${{needs.getBranch_and_commitHash.outputs.output2}}
         

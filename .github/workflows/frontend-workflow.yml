@@ -3,8 +3,8 @@ name: Frontend Workflow
 on:
   push:
     branches: [ "ci_pipelines" ]
-  pull_request:
-    branches: [ "ci_pipelines" ]
+    paths:
+    - 'frontend/**'
   
 env:
  REGISTRY: 859047589462.dkr.ecr.us-east-1.amazonaws.com

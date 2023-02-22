@@ -3,8 +3,8 @@ name: log Message Processor Workflow
 on:
   push:
     branches: [ "ci_pipelines" ]
-  pull_request:
-    branches: [ "ci_pipelines" ]
+    paths:
+    - 'log-message-processor/**'
   
 env:
  REGISTRY: 859047589462.dkr.ecr.us-east-1.amazonaws.com

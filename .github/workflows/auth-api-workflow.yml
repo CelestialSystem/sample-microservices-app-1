@@ -110,11 +110,17 @@ jobs:
 
     steps:
 
-    - name: Install yq (YAML Processor)
+    - name: Install yq (YAML Processor) & Git
       run: |
        sudo add-apt-repository ppa:rmescandon/yq
        sudo apt update
        sudo apt install yq git -y
+
+    - name: Install ArgoCD CLI
+      run: |
+       curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+       sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
+       rm argocd-linux-amd64
 
     - name: Update deployment repository with new Image Version
       uses: nick-fields/retry@v2
@@ -134,3 +140,7 @@ jobs:
           git commit -m "Updated Image Version."
           git push
       
+    - name: Synk ArgoCD app 
+      run: |
+         argocd login ${{ secrets.ARGOCD_SERVER }} --username ${{ secrets.ARGOCD_USER }} --password ${{ secrets.ARGOCD_PASSWORD }} --insecure --grpc-web
+         argocd app sync auth-api-service --grpc-web

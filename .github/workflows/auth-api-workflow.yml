@@ -93,7 +93,7 @@ jobs:
   DeployToDevEnv:
      
     runs-on: ubuntu-latest
-    needs: [getBranch_and_commitHash, build, test, UploadImageToECR]
+    needs: [getBranch_and_commitHash, build, test]
 
     steps:
     - name: Checkout Cluster Repo

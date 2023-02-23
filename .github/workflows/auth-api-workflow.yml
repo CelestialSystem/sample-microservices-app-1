@@ -127,9 +127,10 @@ jobs:
       run: | 
         yq eval '.spec.template.spec.containers[0].image = "$REGISTRY/$DOCKER_REPOSITORY:${{needs.getBranch_and_commitHash.outputs.output1}}-${{needs.getBranch_and_commitHash.outputs.output2}}"' -i deployment.yaml
        
-    - name: Commit & Push 
+    - name: Commit & Push
+      working-directory: /home/runner/work/mcs-poc-001-k8s
       run: |
-       git add deployment.yaml
+       git add k8s/auth-api/deployment.yaml
        git commit -m "Updated Image Version."
        git push
       

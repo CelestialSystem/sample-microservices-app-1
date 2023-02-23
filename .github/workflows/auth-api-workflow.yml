@@ -67,6 +67,17 @@ jobs:
 
     steps:
 
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+    - name: Login to AWS ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+
     - name: Pull Docker Image 
       run: |
        docker pull ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:${{needs.getBranch_and_commitHash.outputs.output1}}-${{needs.getBranch_and_commitHash.outputs.output2}}

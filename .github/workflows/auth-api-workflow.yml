@@ -9,17 +9,31 @@ on:
 env:
  REGISTRY: 859047589462.dkr.ecr.us-east-1.amazonaws.com
  REPOSITORY: sample-microsvc-app-auth-api
- IMAGE_TAG: ${{ github.sha }}
-
+ 
 permissions:
   contents: read
   packages: write
   id-token: write
   security-events: write
 jobs:
+  
+  getBranch_and_commitHash:
+    runs-on: ubuntu-latest
 
+    outputs:
+      output1: ${{ steps.branch.outputs.git_branch }}
+      output2: ${{ steps.hash.outputs.git_hash }}
+    steps:
+      - name: Get Branch
+        id: branch
+        run: echo "::set-output name=git_branch::${GITHUB_REF#refs/heads/}"
+
+      - name: Get Hash
+        id: hash
+        run: echo "::set-output name=git_hash::$(echo $GITHUB_SHA | cut -c1-7)"
+        
   build:
-
+    
     runs-on: ubuntu-latest
 
     steps:

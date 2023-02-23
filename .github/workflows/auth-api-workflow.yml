@@ -125,7 +125,7 @@ jobs:
     - name: Update Image Version
       working-directory: /home/runner/work/mcs-poc-001-k8s/k8s/auth-api
       run: | 
-        yq eval '.spec.template.spec.containers[0].image = "$REGISTRY/$DOCKER_REPOSITORY:${{needs.getBranch_and_commitHash.outputs.output1}}-${{needs.getBranch_and_commitHash.outputs.output2}}"' -i deployment.yaml
+        yq eval '.spec.template.spec.containers[0].image = "${{ env.REGISTRY }}/${{ env.DOCKER_REPOSITORY }}:${{needs.getBranch_and_commitHash.outputs.output1}}-${{needs.getBranch_and_commitHash.outputs.output2}}"' -i deployment.yaml
        
     - name: Commit & Push
       working-directory: /home/runner/work/mcs-poc-001-k8s

@@ -1,3 +1,5 @@
+# Auth API Dockerfile
+
 FROM golang:1.9-alpine
 
 EXPOSE 8081

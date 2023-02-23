@@ -130,6 +130,8 @@ jobs:
     - name: Commit & Push
       working-directory: /home/runner/work/mcs-poc-001-k8s
       run: |
+       git config --global user.email "d.srivastav@celestialsys.com"
+       git config --global user.name "Divyansh Srivastav"
        git add k8s/auth-api/deployment.yaml
        git commit -m "Updated Image Version."
        git push

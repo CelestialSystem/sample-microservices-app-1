@@ -107,6 +107,15 @@ jobs:
      
     runs-on: ubuntu-latest
     needs: [getBranch_and_commitHash, build_and_push, testDockerImage]
+    env:
+     GH_USER: div1127
+     CLUSTER_REPO: CelestialSystem/mcs-poc-001-k8s.git
+     GIT_USER_EMAIL: d.srivastav@celestialsys.com
+     GIT_USER_NAME: Divyansh Srivastav
+     ARGOCD_APP: auth-api-service
+     REPO_CONTEXT: /home/runner/work/mcs-poc-001-k8s
+     SVC_CONTEXT: /home/runner/work/mcs-poc-001-k8s/k8s/auth-api
+
 
     steps:
 
@@ -130,17 +139,17 @@ jobs:
         retry_on: error
         command: | 
           cd /home/runner/work 
-          git clone "https://div1127:${{ secrets.GH_TOKEN }}@github.com/CelestialSystem/mcs-poc-001-k8s.git"
-          cd /home/runner/work/mcs-poc-001-k8s/k8s/auth-api
+          git clone "https://${{ env.GH_USER }}:${{ secrets.GH_TOKEN }}@github.com/${{ env.CLUSTER_REPO }}"
+          cd ${{ env.SVC_CONTEXT }}
           yq eval '.spec.template.spec.containers[0].image = "${{ env.REGISTRY }}/${{ env.DOCKER_REPOSITORY }}:${{needs.getBranch_and_commitHash.outputs.output1}}-${{needs.getBranch_and_commitHash.outputs.output2}}"' -i deployment.yaml
-          cd /home/runner/work/mcs-poc-001-k8s
-          git config --global user.email "d.srivastav@celestialsys.com"
-          git config --global user.name "Divyansh Srivastav"
-          git add k8s/auth-api/deployment.yaml
+          cd ${{ env.REPO_CONTEXT }}
+          git config --global user.email ${{ env.GIT_USER_EMAIL }}
+          git config --global user.name ${{ env.GIT_USER_NAME }}
+          git add ${{ env.SVC_CONTEXT}}/deployment.yaml
           git commit -m "Updated Image Version."
           git push
       
     - name: Synk ArgoCD app 
       run: |
          argocd login ${{ secrets.ARGOCD_SERVER }} --username ${{ secrets.ARGOCD_USER }} --password ${{ secrets.ARGOCD_PASSWORD }} --insecure --grpc-web
-         argocd app sync auth-api-service --grpc-web
+         argocd app sync {{ env.ARGOCD_APP }} --grpc-web

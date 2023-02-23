@@ -8,7 +8,8 @@ on:
   
 env:
  REGISTRY: 859047589462.dkr.ecr.us-east-1.amazonaws.com
- REPOSITORY: sample-microsvc-app-auth-api
+ DOCKER_REPOSITORY: sample-microsvc-app-auth-api
+ CLUSTER_REPO: https://github.com/CelestialSystem/mcs-poc-001-k8s.git
  
 permissions:
   contents: read
@@ -55,11 +56,11 @@ jobs:
       
     - name: Build the Docker image
       working-directory: auth-api
-      run: docker build . --file Dockerfile --tag $REGISTRY/$REPOSITORY:${{needs.getBranch_and_commitHash.outputs.output1}}-${{needs.getBranch_and_commitHash.outputs.output2}}
+      run: docker build . --file Dockerfile --tag $REGISTRY/$DOCKER_REPOSITORY:${{needs.getBranch_and_commitHash.outputs.output1}}-${{needs.getBranch_and_commitHash.outputs.output2}}
          
     - name: Push image to Amazon ECR
       run: |
-        docker push $REGISTRY/$REPOSITORY:${{needs.getBranch_and_commitHash.outputs.output1}}-${{needs.getBranch_and_commitHash.outputs.output2}}
+        docker push $REGISTRY/$DOCKER_REPOSITORY:${{needs.getBranch_and_commitHash.outputs.output1}}-${{needs.getBranch_and_commitHash.outputs.output2}}
     
   testDockerImage: 
     runs-on: ubuntu-latest
@@ -80,12 +81,12 @@ jobs:
 
     - name: Pull Docker Image 
       run: |
-       docker pull ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:${{needs.getBranch_and_commitHash.outputs.output1}}-${{needs.getBranch_and_commitHash.outputs.output2}}
+       docker pull ${{ env.REGISTRY }}/${{ env.DOCKER_REPOSITORY }}:${{needs.getBranch_and_commitHash.outputs.output1}}-${{needs.getBranch_and_commitHash.outputs.output2}}
 
     - name: Run Trivy vulnerability scanner
       uses: aquasecurity/trivy-action@master
       with:
-       image-ref: ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:${{needs.getBranch_and_commitHash.outputs.output1}}-${{needs.getBranch_and_commitHash.outputs.output2}}
+       image-ref: ${{ env.REGISTRY }}/${{ env.DOCKER_REPOSITORY }}:${{needs.getBranch_and_commitHash.outputs.output1}}-${{needs.getBranch_and_commitHash.outputs.output2}}
        format: 'sarif'
        output: 'trivy-results-docker.sarif'
        severity: 'CRITICAL,HIGH'
@@ -107,33 +108,23 @@ jobs:
     needs: [getBranch_and_commitHash, build_and_push, testDockerImage]
 
     steps:
-    - name: Checkout Cluster Repo
-      uses: actions/checkout@v3
-      with:
-        repository: CelestialSystem/mcs-poc-001-k8s
-        token: ${{ secrets.GH_TOKEN }}
-        path: cluster-repo
 
-    - name: Move Cluster Repo
-      run: |
-       ls $GITHUB_WORKSPACE/cluster-repo
-       mv $GITHUB_WORKSPACE/cluster-repo /home/runner/work/
-        
-
-    #- name: Update Image Version 
-      #uses: mikefarah/yq@master
-      #with:
-       # cmd: yq eval '.spec.template.spec.containers[0].image = "$REGISTRY/$REPOSITORY:${{needs.getBranch_and_commitHash.outputs.output1}}-${{needs.getBranch_and_commitHash.outputs.output2}}"' -i deployment.yaml
     - name: Install yq (YAML Processor)
       run: |
-       sudo add-apt-repository ppa:rmescandon/yq
+       sudo add-apt-DOCKER_repository ppa:rmescandon/yq
        sudo apt update
-       sudo apt install yq -y
+       sudo apt install yq git -y
+
+    - name: Clone Cluster Repo
+      run: |
+       cd /home/runner/work 
+       git clone {{ env.CLUSTER_REPO }}
+       pwd
 
     - name: Update Image Version
-      working-directory: /home/runner/work/cluster-repo/mcs-poc-001-k8s/k8s/auth-api
+      working-directory: /home/runner/work/mcs-poc-001-k8s/k8s/auth-api
       run: | 
-        yq eval '.spec.template.spec.containers[0].image = "$REGISTRY/$REPOSITORY:${{needs.getBranch_and_commitHash.outputs.output1}}-${{needs.getBranch_and_commitHash.outputs.output2}}"' -i deployment.yaml
+        yq eval '.spec.template.spec.containers[0].image = "$REGISTRY/$DOCKER_REPOSITORY:${{needs.getBranch_and_commitHash.outputs.output1}}-${{needs.getBranch_and_commitHash.outputs.output2}}"' -i deployment.yaml
        
     - name: Commit & Push 
       run: |

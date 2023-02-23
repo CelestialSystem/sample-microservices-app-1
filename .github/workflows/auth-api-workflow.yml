@@ -11,6 +11,7 @@ env:
  DOCKER_REPOSITORY: sample-microsvc-app-auth-api
  CLUSTER_REPO: https://github.com/CelestialSystem/mcs-poc-001-k8s.git
  
+ 
 permissions:
   contents: read
   packages: write
@@ -118,7 +119,7 @@ jobs:
     - name: Clone Cluster Repo
       run: |
        cd /home/runner/work 
-       git clone https://div1127:{{ secrets.GH_TOKEN }}@github.com/CelestialSystem/mcs-poc-001-k8s.git
+       git clone "https://div1127:${{ secrets.GH_TOKEN }}@github.com/CelestialSystem/mcs-poc-001-k8s.git"
        pwd
 
     - name: Update Image Version

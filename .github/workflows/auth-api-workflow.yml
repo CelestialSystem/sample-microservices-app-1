@@ -47,20 +47,30 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
+
+
+    - name: Login to AWS ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
       
     - name: Build the Docker image
       working-directory: auth-api
       run: docker build . --file Dockerfile --tag $REGISTRY/$REPOSITORY:${{needs.getBranch_and_commitHash.outputs.output1}}-${{needs.getBranch_and_commitHash.outputs.output2}}
-       
-    - name: Debug output
-      run: | 
-          docker images
-
+         
+    - name: Push image to Amazon ECR
+      run: |
+        docker push $REGISTRY/$REPOSITORY:${{needs.getBranch_and_commitHash.outputs.output1}}-${{needs.getBranch_and_commitHash.outputs.output2}}
+    
   test: 
     runs-on: ubuntu-latest
     needs: [getBranch_and_commitHash, build]
 
     steps:
+
+    - name: Pull Docker Image 
+      run: |
+       docker pull ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:${{needs.getBranch_and_commitHash.outputs.output1}}-${{needs.getBranch_and_commitHash.outputs.output2}}
+
     - name: Run Trivy vulnerability scanner
       uses: aquasecurity/trivy-action@master
       with:
@@ -78,21 +88,7 @@ jobs:
       uses: github/codeql-action/upload-sarif@v2
       with:
         sarif_file: 'trivy-results-docker.sarif'
-
-  UploadImageToECR:
-
-    runs-on: ubuntu-latest
-    needs: [getBranch_and_commitHash, build, test] 
-
-    steps:    
-    - name: Login to AWS ECR
-      id: login-ecr
-      uses: aws-actions/amazon-ecr-login@v1
-
-    - name: Push image to Amazon ECR
-      id: build-image
-      run: |
-        docker push $REGISTRY/$REPOSITORY:${{needs.getBranch_and_commitHash.outputs.output1}}-${{needs.getBranch_and_commitHash.outputs.output2}}
+    
 
   DeployToDevEnv:
      

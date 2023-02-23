@@ -112,12 +112,23 @@ jobs:
       with:
         repository: CelestialSystem/mcs-poc-001-k8s
         token: ${{ secrets.GH_TOKEN }}
+        
 
-    - name: Update Image Version 
-      uses: mikefarah/yq@master
-      with:
-        cmd: yq eval '.spec.template.spec.containers[0].image = "$REGISTRY/$REPOSITORY:${{needs.getBranch_and_commitHash.outputs.output1}}-${{needs.getBranch_and_commitHash.outputs.output2}}"' -i deployment.yaml
+    #- name: Update Image Version 
+      #uses: mikefarah/yq@master
+      #with:
+       # cmd: yq eval '.spec.template.spec.containers[0].image = "$REGISTRY/$REPOSITORY:${{needs.getBranch_and_commitHash.outputs.output1}}-${{needs.getBranch_and_commitHash.outputs.output2}}"' -i deployment.yaml
+    - name: Install yq (YAML Processor)
+      run: |
+       add-apt-repository ppa:rmescandon/yq
+       apt update
+       apt install yq -y
 
+    - name: Update Image Version
+      working-directory: mcs-poc-001-k8s/k8s/auth-api
+      run: | 
+        yq eval '.spec.template.spec.containers[0].image = "$REGISTRY/$REPOSITORY:${{needs.getBranch_and_commitHash.outputs.output1}}-${{needs.getBranch_and_commitHash.outputs.output2}}"' -i deployment.yaml
+       
     - name: Commit & Push 
       run: |
        git add deployment.yaml

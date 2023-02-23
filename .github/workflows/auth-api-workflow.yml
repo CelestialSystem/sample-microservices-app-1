@@ -35,12 +35,16 @@ jobs:
       
     - name: Build the Docker image
       working-directory: auth-api
-      run: docker build . --file Dockerfile --tag $REGISTRY/$REPOSITORY:$IMAGE_TAG
+      run: docker build . --file Dockerfile --tag $REGISTRY/$REPOSITORY:${{needs.getBranch_and_commitHash.outputs.output1}}-${{needs.getBranch_and_commitHash.outputs.output2}}
        
     - name: Debug output
       run: | 
           docker images
-    
+
+  test: 
+    runs-on: ubuntu-latest
+
+    steps:
     - name: Run Trivy vulnerability scanner
       uses: aquasecurity/trivy-action@master
       with:
@@ -58,12 +62,40 @@ jobs:
       uses: github/codeql-action/upload-sarif@v2
       with:
         sarif_file: 'trivy-results-docker.sarif'
-        
+
+  UploadImageToECR:
+
+    runs-on: ubuntu-latest
+
+    steps:    
     - name: Login to AWS ECR
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
 
-    - name: Build, tag, and push image to Amazon ECR
+    - name: Push image to Amazon ECR
       id: build-image
       run: |
-        docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+        docker push $REGISTRY/$REPOSITORY:${{needs.getBranch_and_commitHash.outputs.output1}}-${{needs.getBranch_and_commitHash.outputs.output2}}
+
+  DeployToDevEnv:
+     
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Cluster Repo
+      uses: actions/checkout@v3
+      with:
+        repository: CelestialSystem/mcs-poc-001-iac
+        token: ${{ secrets.GH_TOKEN }}
+
+    - name: Update Image Version 
+      uses: mikefarah/yq@master
+      with:
+        cmd: yq eval '.spec.template.spec.containers[0].image = "$REGISTRY/$REPOSITORY:${{needs.getBranch_and_commitHash.outputs.output1}}-${{needs.getBranch_and_commitHash.outputs.output2}}"' -i deployment.yaml
+
+    - name: Commit & Push 
+      run: |
+       git add deployment.yaml
+       git commit -m "Updated Image Version."
+       git push
+      

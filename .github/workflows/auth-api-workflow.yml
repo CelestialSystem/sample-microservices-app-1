@@ -112,7 +112,7 @@ jobs:
       with:
         repository: CelestialSystem/mcs-poc-001-k8s
         token: ${{ secrets.GH_TOKEN }}
-        path: cluster-repo
+        path: /home/runner/work
         
 
     #- name: Update Image Version 
@@ -126,7 +126,7 @@ jobs:
        sudo apt install yq -y
 
     - name: Update Image Version
-      working-directory: $GITHUB_WORKSPACE/cluster-repo/mcs-poc-001-k8s/k8s/auth-api
+      working-directory: /home/runner/work//mcs-poc-001-k8s/k8s/auth-api
       run: | 
         yq eval '.spec.template.spec.containers[0].image = "$REGISTRY/$REPOSITORY:${{needs.getBranch_and_commitHash.outputs.output1}}-${{needs.getBranch_and_commitHash.outputs.output2}}"' -i deployment.yaml
        

@@ -118,7 +118,7 @@ jobs:
     - name: Clone Cluster Repo
       run: |
        cd /home/runner/work 
-       git clone {{ env.CLUSTER_REPO }}
+       git clone https://github.com/CelestialSystem/mcs-poc-001-k8s.git
        pwd
 
     - name: Update Image Version

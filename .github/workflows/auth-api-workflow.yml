@@ -58,7 +58,7 @@ jobs:
 
   test: 
     runs-on: ubuntu-latest
-    needs: build
+    needs: [getBranch_and_commitHash, build]
 
     steps:
     - name: Run Trivy vulnerability scanner
@@ -82,7 +82,7 @@ jobs:
   UploadImageToECR:
 
     runs-on: ubuntu-latest
-    needs: test 
+    needs: [getBranch_and_commitHash, build, test] 
 
     steps:    
     - name: Login to AWS ECR
@@ -97,7 +97,7 @@ jobs:
   DeployToDevEnv:
      
     runs-on: ubuntu-latest
-    needs: UploadImageToECR
+    needs: [getBranch_and_commitHash, build, test, UploadImageToECR]
 
     steps:
     - name: Checkout Cluster Repo

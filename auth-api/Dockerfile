@@ -1,4 +1,4 @@
-#  Auth API Dockerfile.
+#  Auth API Dockerfile..
 
 FROM golang:1.9-alpine
 

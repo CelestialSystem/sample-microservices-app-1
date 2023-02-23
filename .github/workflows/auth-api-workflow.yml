@@ -111,7 +111,7 @@ jobs:
 
     - name: Install yq (YAML Processor)
       run: |
-       sudo add-apt-DOCKER_repository ppa:rmescandon/yq
+       sudo add-apt-repository ppa:rmescandon/yq
        sudo apt update
        sudo apt install yq git -y
 

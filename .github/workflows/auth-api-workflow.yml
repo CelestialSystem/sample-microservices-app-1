@@ -152,4 +152,4 @@ jobs:
     - name: Synk ArgoCD app 
       run: |
          argocd login ${{ secrets.ARGOCD_SERVER }} --username ${{ secrets.ARGOCD_USER }} --password ${{ secrets.ARGOCD_PASSWORD }} --insecure --grpc-web
-         argocd app sync {{ env.ARGOCD_APP }} --grpc-web
+         argocd app sync ${{ env.ARGOCD_APP }} --grpc-web

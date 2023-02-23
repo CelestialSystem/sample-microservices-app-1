@@ -113,9 +113,11 @@ jobs:
         repository: CelestialSystem/mcs-poc-001-k8s
         token: ${{ secrets.GH_TOKEN }}
         path: cluster-repo
+
+    - name: Move Cluster Repo
       run: |
-       ls cluster-repo
-       mv cluster-repo /home/runner/work/
+       ls $GITHUB_WORKSPACE/cluster-repo
+       mv $GITHUB_WORKSPACE/cluster-repo /home/runner/work/
         
 
     #- name: Update Image Version 

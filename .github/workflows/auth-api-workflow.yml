@@ -120,9 +120,9 @@ jobs:
        # cmd: yq eval '.spec.template.spec.containers[0].image = "$REGISTRY/$REPOSITORY:${{needs.getBranch_and_commitHash.outputs.output1}}-${{needs.getBranch_and_commitHash.outputs.output2}}"' -i deployment.yaml
     - name: Install yq (YAML Processor)
       run: |
-       add-apt-repository ppa:rmescandon/yq
-       apt update
-       apt install yq -y
+       sudo add-apt-repository ppa:rmescandon/yq
+       sudo apt update
+       sudo apt install yq -y
 
     - name: Update Image Version
       working-directory: mcs-poc-001-k8s/k8s/auth-api

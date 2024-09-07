@@ -1,5 +1,5 @@
 #
-FROM python:3.6-alpine
+FROM python:3.12.0a1-alpine
 
 WORKDIR /usr/src/app
 RUN apk add --no-cache build-base
